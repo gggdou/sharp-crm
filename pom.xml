@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--父工程坐标-->
+    <groupId>com.itcast</groupId>
+    <artifactId>qk-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <!--打包类型pom：代表聚合工程，只做依赖管理，不生成jar包-->
+    <packaging>pom</packaging>
+
+    <!--聚合模块：管理所有子模块，mvn一键打包全部子项目-->
+    <modules>
+        <module>qk-common</module>
+        <module>qk-entity</module>
+        <module>qk-management</module>
+    </modules>
+
+    <!--继承SpringBoot官方父工程，内置springboot所有依赖版本管理-->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.4.8</version>
+    </parent>
+
+    <!--全局属性，统一存放版本号，方便集中维护-->
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <lombok.version>1.18.38</lombok.version>
+        <hutool.version>5.8.44</hutool.version>
+        <qk.version>1.0-SNAPSHOT</qk.version>
+        <mybatis-plus.version>3.5.17</mybatis-plus.version>
+        <com.aliyun.oss.version>3.18.4</com.aliyun.oss.version>
+        <jaxb-api.version>2.3.1</jaxb-api.version>
+        <activation.version>1.1.1</activation.version>
+        <jaxb-runtime.version>2.3.3</jaxb-runtime.version>
+        <jwt.version>0.9.1</jwt.version>
+    </properties>
+
+    <!--父工程直接引入的依赖：所有子模块都会自动继承-->
+    <dependencies>
+        <!-- lombok：简化实体类，自动生成get/set、toString等，减少模板代码 -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
+        <!-- hutool：国产工具包，大量工具类（日期、字符串、IO等） -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool.version}</version>
+        </dependency>
+    </dependencies>
+
+    <!-- 依赖版本管理：只定义版本，子模块引用时不需要写version，统一管控版本，防止版本冲突 -->
+    <dependencyManagement>
+        <dependencies>
+            <!--阿里云OSS SDK 版本定义-->
+            <dependency>
+                <groupId>com.aliyun.oss</groupId>
+                <artifactId>aliyun-sdk-oss</artifactId>
+                <version>${com.aliyun.oss.version}</version>
+            </dependency>
+            <!--JAXB API 阿里云OSS依赖所需-->
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>${jaxb-api.version}</version>
+            </dependency>
+            <!--activation  MIME类型解析，OSS依赖-->
+            <dependency>
+                <groupId>javax.activation</groupId>
+                <artifactId>activation</artifactId>
+                <version>${activation.version}</version>
+            </dependency>
+            <!--jaxb运行实现包，JDK17+缺失，OSS必需，版本不超过2.3.3-->
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>${jaxb-runtime.version}</version>
+            </dependency>
+            <!--子模块 qk-common 版本管理-->
+            <dependency>
+                <groupId>com.itcast</groupId>
+                <artifactId>qk-common</artifactId>
+                <version>${qk.version}</version>
+            </dependency>
+            <!--子模块 qk-entity 版本管理-->
+            <dependency>
+                <groupId>com.itcast</groupId>
+                <artifactId>qk-entity</artifactId>
+                <version>${qk.version}</version>
+            </dependency>
+            <!--MyBatisPlus starter版本管理-->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+            <!--MyBatisPlus jsqlparser 分页插件版本管理-->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-jsqlparser</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+            <!--jjwt jwt令牌工具包版本管理-->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jwt.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>

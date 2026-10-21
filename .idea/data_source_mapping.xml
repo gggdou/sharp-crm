@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$PROJECT_DIR$/Sql表/course.sql" value="875432ae-d60f-4738-842d-e0b86f266090" />
+    <file url="file://$PROJECT_DIR$/Sql表/data.sql" value="875432ae-d60f-4738-842d-e0b86f266090" />
+    <file url="file://$PROJECT_DIR$/Sql表/role.sql" value="875432ae-d60f-4738-842d-e0b86f266090" />
+    <file url="file://$PROJECT_DIR$/Sql表/user.sql" value="875432ae-d60f-4738-842d-e0b86f266090" />
+    <file url="file://$PROJECT_DIR$/多表查询/Querydb5.sql" value="875432ae-d60f-4738-842d-e0b86f266090" />
+  </component>
+</project>

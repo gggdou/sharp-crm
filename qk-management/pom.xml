@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <!--继承父工程 qk-parent-->
+    <parent>
+        <groupId>com.itcast</groupId>
+        <artifactId>qk-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <!--后台管理主模块，项目启动入口，controller、service、mapper都写在这里-->
+    <artifactId>qk-management</artifactId>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <!--引入公共模块 qk-common：工具类、全局异常、统一返回结果、OSS工具类等-->
+        <dependency>
+            <groupId>com.itcast</groupId>
+            <artifactId>qk-common</artifactId>
+        </dependency>
+        <!--引入实体模块 qk-entity：数据库实体类、dto-->
+        <dependency>
+            <groupId>com.itcast</groupId>
+            <artifactId>qk-entity</artifactId>
+        </dependency>
+        <!--MyBatis-Plus jsqlparser，用于分页插件解析SQL语句，分页必备-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-jsqlparser</artifactId>
+        </dependency>
+        <!--SpringBoot测试依赖，单元测试使用-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+        <!--Spring AOP起步依赖，用于切面编程（你的操作日志切面 @Around 记录操作日志）-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!--SpringBoot打包插件，将项目打包成可执行jar包-->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <!--继承父工程 qk-parent，统一管理版本号、公共依赖-->
+    <parent>
+        <groupId>com.itcast</groupId>
+        <artifactId>qk-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <!--当前模块：实体类模块，存放数据库对应的实体POJO、DTO等-->
+    <artifactId>qk-entity</artifactId>
+
+    <properties>
+        <!--JDK源码编译版本21-->
+        <maven.compiler.source>21</maven.compiler.source>
+        <!--编译生成class文件兼容JDK21-->
+        <maven.compiler.target>21</maven.compiler.target>
+        <!--项目编码统一UTF-8，解决中文乱码-->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <!-- MySQL驱动，runtime范围：编译时不需要，运行项目才加载 -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- MyBatis-Plus SpringBoot3 Starter，简化CRUD操作，ORM框架 -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+        </dependency>
+        <!-- SpringBoot Web起步依赖，提供web相关能力（请求、文件上传等） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- 【重复依赖，建议删除】mysql驱动，上面已经引入，maven会自动去重，冗余 -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- SpringBoot单元测试依赖，scope=test只在测试环境生效 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

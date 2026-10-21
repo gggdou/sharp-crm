@@ -1,0 +1,39 @@
+# SpringBoot核心配置文件 application.yml
+spring:
+  # 数据源配置：连接MySQL数据库
+  datasource:
+    # MySQL驱动类名称，mysql8使用cj包
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 数据库登录账号
+    username: root
+    # 数据库登录密码
+    password: 123456
+    # 数据库连接地址，连接本地3306端口，数据库名称web01
+    url: jdbc:mysql://localhost:3306/qk
+  security:
+    oauth2:
+      resourceserver:
+
+
+# MyBatis-Plus相关配置
+mybatis-plus:
+  configuration:
+    # 控制台打印SQL执行日志，开发调试使用
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # 开启下划线与驼峰命名自动转换 user_name <--> userName
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config: # MP数据库全局策略配置
+      # 全局主键生成策略：数据库自增
+      id-type: auto
+      # table-prefix: t_  配置数据库表统一前缀，例如t_user
+
+ali:
+  oss:
+    endpoint: https://oss-cn-beijing.aliyuncs.com
+    bucketName: heima-test-gyj
+    region: cn-beijing
+
+token:
+  expire: 86400000
+  signature: itheima
