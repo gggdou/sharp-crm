@@ -3,9 +3,9 @@
 锐客 CRM 接口压测脚本（纯标准库，无需安装依赖）
 
 用法：
-    python scripts/bench.py                       # 默认 20 并发 x 50 次
-    python scripts/bench.py -c 50 -n 100          # 50 并发 x 100 次
-    python scripts/bench.py --paths /clues,/customers,/dashboard/stats
+    python ops/scripts/bench.py                       # 默认 20 并发 x 50 次
+    python ops/scripts/bench.py -c 50 -n 100          # 50 并发 x 100 次
+    python ops/scripts/bench.py --paths /clues,/customers,/dashboard/stats
 
 输出：QPS、平均延迟、P50/P95/P99、错误率，可直接作为压测报告数据。
 """

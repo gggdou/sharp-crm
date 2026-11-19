@@ -3,8 +3,8 @@
 **/.git
 **/.idea
 **/.workbuddy
-sharp-web/dist
-nginx-1.24.0-sharp/logs
-nginx-1.24.0-sharp/temp
+frontend/dist
+ops/nginx/logs
+ops/nginx/temp
 *.log
 README.md

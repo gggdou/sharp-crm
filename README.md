@@ -48,45 +48,56 @@
 ## 三、工程结构
 
 ```
-sharp-crm-parent/                    父工程（pom 聚合，统一版本管理）
-├── sharp-crm-common/                公共能力（被两个模块复用）
-│   └── com.sharpcrm.common
-│       ├── Result / PageDate          统一返回结构与分页对象
-│       ├── JWTUtils                   JWT 签发与解析
-│       ├── DataHolder                 ThreadLocal 用户上下文
-│       ├── RedisCache                 Redis 读写封装（异常自动降级本地缓存）
-│       ├── VerifyCodeUtils            图形验证码生成
-│       ├── OSSUtils                   阿里云 OSS 上传
-│       ├── AliProperties              OSS 配置绑定
-│       └── config/                    Redis 序列化配置、线程池配置
-├── sharp-crm-entity/                领域模型
-│   └── com.sharpcrm.{pojo,dto,vo}
-│       ├── pojo/                      13 个实体（User/Dept/Role/Clue/Business/Customer/Contract/Payment/...）
-│       ├── dto/                       查询条件对象
-│       └── vo/                        LoginVo、ClueExcel、DashboardVo、Customer360Vo、TodoVo、ContractVo
-├── sharp-crm-management/            Web 主模块（启动入口）
-│   └── com.sharpcrm
-│       ├── App.java                   启动类（开启 AOP、定时任务）
-│       ├── controller/                14 个 Controller
-│       ├── service/ + impl/           业务接口与实现
-│       ├── mapper/                    MyBatis-Plus Mapper
-│       ├── interceptor/               LoginInterceptor 登录拦截
-│       ├── aspect/                    LogAspect 操作审计、RoleAuthAspect 角色鉴权
-│       ├── support/                   DataScopeHelper 数据权限推导
-│       ├── task/                      ClueRecycleTask 线索回收、ContractOverdueTask 回款逾期
-│       ├── config/                    Web / MyBatis-Plus / Knife4j / 字段填充 / traceId / 慢 SQL
-│       ├── exception/                 业务异常与全局异常处理
-│       └── resources/                 application.yml、logback.xml、5 个 Mapper XML
-└── sharp-web/                   前端工程（Vue 3 + Vite）
-    └── src
-        ├── api/index.js               全部接口定义（含 CRUD 工厂）
-        ├── utils/request.js           Axios 封装（token 注入、统一错误处理）
-        ├── store/user.js              Pinia 用户状态
-        ├── router/index.js            路由与登录守卫
-        ├── layout/index.vue           侧边栏 + 顶栏布局
-        ├── components/SimpleCrud.vue  配置驱动的通用 CRUD 表格组件
-        └── views/                     11 个页面（登录、仪表盘、线索、商机、客户...）
+sharp-crm/
+├── backend/                        后端（Maven 多模块聚合）
+│   ├── pom.xml                     父工程，统一依赖与版本管理
+│   ├── sharp-crm-common/           公共能力（被两个模块复用）
+│   │   └── com.sharpcrm.common
+│   │       ├── Result / PageDate     统一返回结构与分页对象
+│   │       ├── JWTUtils              JWT 签发与解析
+│   │       ├── DataHolder            ThreadLocal 用户上下文
+│   │       ├── RedisCache            Redis 读写封装（异常自动降级本地缓存）
+│   │       ├── VerifyCodeUtils       图形验证码生成
+│   │       ├── OSSUtils              阿里云 OSS 上传
+│   │       ├── AliProperties         OSS 配置绑定
+│   │       └── config/               Redis 序列化配置、线程池配置
+│   ├── sharp-crm-entity/           领域模型
+│   │   └── com.sharpcrm.{pojo,dto,vo}
+│   │       ├── pojo/                 13 个实体（User/Dept/Role/Clue/Business/Customer/Contract/Payment/...）
+│   │       ├── dto/                  查询条件对象
+│   │       └── vo/                   LoginVo、ClueExcel、DashboardVo、Customer360Vo、TodoVo、ContractVo
+│   └── sharp-crm-management/       Web 主模块（启动入口）
+│       └── com.sharpcrm
+│           ├── App.java              启动类（开启 AOP、定时任务）
+│           ├── controller/           14 个 Controller
+│           ├── service/ + impl/      业务接口与实现
+│           ├── mapper/               MyBatis-Plus Mapper
+│           ├── interceptor/          LoginInterceptor 登录拦截
+│           ├── aspect/               LogAspect 操作审计、RoleAuthAspect 角色鉴权
+│           ├── support/              DataScopeHelper 数据权限推导
+│           ├── task/                 ClueRecycleTask 线索回收、ContractOverdueTask 回款逾期
+│           ├── config/               Web / MyBatis-Plus / Knife4j / 字段填充 / traceId / 慢 SQL
+│           ├── exception/            业务异常与全局异常处理
+│           └── resources/            application.yml、logback.xml、5 个 Mapper XML
+├── frontend/                       前端（Vue 3 + Vite）
+│   └── src
+│       ├── api/index.js              全部接口定义（含 CRUD 工厂）
+│       ├── utils/request.js          Axios 封装（token 注入、统一错误处理）
+│       ├── store/user.js             Pinia 用户状态
+│       ├── router/index.js           路由与登录守卫
+│       ├── layout/index.vue          侧边栏 + 顶栏布局
+│       ├── components/SimpleCrud.vue 配置驱动的通用 CRUD 表格组件
+│       └── views/                    11 个页面（登录、仪表盘、线索、商机、客户...）
+└── ops/                             部署与运维物料
+    ├── Dockerfile                    后端多阶段构建（构建上下文为仓库根）
+    ├── docker-compose.yml            mysql / redis / backend / nginx 四服务编排
+    ├── docker/nginx.conf             容器内 Nginx 反向代理配置
+    ├── nginx/                        本地 Nginx 1.24 发行版（生产形态演示）
+    ├── sql/                          建库与初始化脚本（按序号执行）
+    ├── scripts/bench.py              接口压测脚本
+    └── docs/压测报告.md              压测环境、数据与结论
 ```
+
 
 ## 四、快速开始
 
@@ -102,7 +113,7 @@ sharp-crm-parent/                    父工程（pom 聚合，统一版本管理
 
 ### 4.2 初始化数据库
 
-按顺序执行 `Sql表/` 下脚本（均以 `use sharp_crm` 开头）：
+按顺序执行 `ops/sql/` 下脚本（均以 `use sharp_crm` 开头）：
 
 | 顺序 | 脚本 | 内容 |
 |---|---|---|
@@ -122,7 +133,7 @@ mysql -uroot -p sharp_crm < backup.sql
 
 ### 4.3 配置
 
-`sharp-crm-management/src/main/resources/application.yml` 中所有敏感项均为「环境变量 + 本地默认值」形式：
+`backend/sharp-crm-management/src/main/resources/application.yml` 中所有敏感项均为「环境变量 + 本地默认值」形式：
 
 ```yaml
 spring:
@@ -149,6 +160,8 @@ token:
 ### 4.4 启动后端
 
 ```bash
+cd backend
+
 # 编译 + 全部单元测试
 mvn clean test
 
@@ -163,7 +176,7 @@ java -jar sharp-crm-management/target/sharp-crm-management-1.0-SNAPSHOT.jar
 ### 4.5 启动前端
 
 ```bash
-cd sharp-web
+cd frontend
 npm install
 npm run dev     # 开发模式 http://localhost:5173，/api 自动代理到 8080
 npm run build   # 生产构建，产物在 dist/
@@ -172,9 +185,9 @@ npm run build   # 生产构建，产物在 dist/
 ### 4.6 Nginx 部署（生产形态）
 
 ```bash
-cd sharp-web && npm run build
-cp -r dist/* ../nginx-1.24.0-sharp/html/
-cd ../nginx-1.24.0-sharp && ./nginx.exe      # 监听 90 端口
+cd frontend && npm run build
+cp -r dist/* ../ops/nginx/html/
+cd ../ops/nginx && ./nginx.exe      # 监听 90 端口
 ```
 
 `conf/nginx.conf` 已配置：静态资源 fallback 到 `index.html`（SPA 路由），`/api` 去前缀反代到 `http://localhost:8080`。
@@ -184,10 +197,11 @@ cd ../nginx-1.24.0-sharp && ./nginx.exe      # 监听 90 端口
 ### 4.7 Docker 一键部署
 
 ```bash
-docker compose up -d --build
+# 在仓库根目录执行，编排文件位于 ops/ 下，构建上下文指向根目录
+docker compose -f ops/docker-compose.yml up -d --build
 ```
 
-编排含 4 个服务：MySQL 8（挂载 `Sql表/` 初始化）、Redis 7、Spring Boot 后端、Nginx 前端。后端使用 `docker` profile，数据库与 Redis 地址指向服务名。
+编排含 4 个服务：MySQL 8（挂载 `ops/sql/` 初始化）、Redis 7、Spring Boot 后端、Nginx 前端。后端使用 `docker` profile，数据库与 Redis 地址指向服务名。
 
 ## 五、功能模块
 
@@ -300,4 +314,4 @@ python scripts/bench.py -c 50 -n 40
 - **CI**：`.github/workflows/ci.yml`，push / PR 触发两条流水线——后端 `mvn clean test` + 打包，前端 `npm ci` + 构建，产物留存 7 天。
 - **健康检查**：`GET /actuator/health` 免登录，供容器探针使用；Redis 作为可选依赖不参与整体健康判定，避免无 Redis 环境被误判为不可用。
 - **配置外置**：数据库、Redis、JWT 密钥、MyBatis 日志级别均支持环境变量覆盖，镜像不需要重新打包即可切换环境。
-- **数据库脚本**：`Sql表/` 下按表拆分建表语句，`contract.sql` 为本次新增的合同与回款两张表。
+- **数据库脚本**：`ops/sql/` 下按表拆分建表语句，`contract.sql` 为本次新增的合同与回款两张表。
