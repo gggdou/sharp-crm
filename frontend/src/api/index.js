@@ -34,7 +34,7 @@ export const clueApi = {
     form.append('file', file)
     return request.post('/clues/import', form, { headers: { 'Content-Type': 'multipart/form-data' } })
   },
-  exportUrl: '/api/clues/export'
+  exportExcel: () => request.get('/clues/export', { responseType: 'blob' })
 }
 
 export const businessApi = {

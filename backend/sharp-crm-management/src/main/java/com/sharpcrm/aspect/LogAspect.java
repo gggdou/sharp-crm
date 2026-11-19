@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 /**
  * 操作日志切面类
@@ -82,15 +81,7 @@ public class LogAspect {
             operateLog.setCostTime(end - start);
 
             // 从 ThreadLocal 取当前登录用户，必须在主线程取（异步线程拿不到 ThreadLocal）
-            Integer userId = null;
-            Object context = dataHolder.get();
-            if (context instanceof Map<?, ?> claims) {
-                Object id = claims.get("id");
-                if (id != null) {
-                    userId = Integer.parseInt(id.toString());
-                }
-            }
-            operateLog.setOperateUserId(userId);
+            operateLog.setOperateUserId(dataHolder.getCurrentUserId());
 
             // 异步落库：日志写入不阻塞主业务响应
             asyncLogService.saveAsync(operateLog);

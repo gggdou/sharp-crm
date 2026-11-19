@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,8 @@ public class User {
     @jakarta.validation.constraints.NotBlank(groups = com.sharpcrm.validation.Create.class, message = "用户名不能为空")
     @jakarta.validation.constraints.Size(min = 3, max = 20, message = "用户名长度需在 3 到 20 个字符之间")
     private String username;
-    @jakarta.validation.constraints.NotBlank(groups = com.sharpcrm.validation.Create.class, message = "密码不能为空")
+    // 密码由后端统一初始化，禁止出现在任何响应 JSON 中；WRITE_ONLY 保留请求体写入能力
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @jakarta.validation.constraints.Size(min = 6, max = 32, message = "密码长度需在 6 到 32 个字符之间")
     private String password;
     private String name;

@@ -22,10 +22,10 @@ const searchFields = [
   { prop:'status', label:'状态', type:'select', options:statusOpts }
 ]
 const editFields = [
-  { prop:'username', label:'用户名' },
+  { prop:'username', label:'用户名', required:true },
   { prop:'name', label:'姓名' },
-  { prop:'phone', label:'手机号' },
-  { prop:'email', label:'邮箱' },
+  { prop:'phone', label:'手机号', required:true },
+  { prop:'email', label:'邮箱', required:true },
   { prop:'gender', label:'性别', type:'select', options:[{value:1,label:'男'},{value:2,label:'女'}] },
   { prop:'deptId', label:'部门ID', type:'number' },
   { prop:'roleId', label:'角色ID', type:'number' },

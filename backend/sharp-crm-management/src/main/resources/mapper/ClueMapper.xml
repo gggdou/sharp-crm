@@ -22,7 +22,7 @@
                 and clue.channel = #{clueDto.channel}
             </if>
             <if test="clueDto.assignName != null and clueDto.assignName != ''">
-                and clue.name like concat('%', #{clueDto.assignName}, '%')
+                and user.name like concat('%', #{clueDto.assignName}, '%')
             </if>
             <!-- 数据权限：非管理员只查归属自己的线索，scopeUserId 由服务端推导并覆盖写入 -->
             <if test="clueDto.scopeUserId != null">
@@ -36,8 +36,10 @@
         from clue
                  left join activity on clue.activity_id = activity.id
         <where>
+            clue.user_id is null
+            and clue.status = 1
             <if test="clueDto.clueId != null">
-                clue.id = #{clueDto.clueId}
+                and clue.id = #{clueDto.clueId}
             </if>
             <if test="clueDto.phone != null and clueDto.phone != ''">
                 and clue.phone like concat('%', #{clueDto.phone}, '%')

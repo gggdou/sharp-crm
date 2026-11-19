@@ -91,7 +91,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { clueApi, userApi } from '@/api'
+import { clueApi } from '@/api'
 
 const subjectMap = { 1:'AI智能应用开发(Java)', 2:'AI大模型开发(Python)', 3:'AI鸿蒙开发', 4:'AI大数据', 5:'AI嵌入式', 6:'AI测试', 7:'AI运维' }
 const levelMap = { 1:'近期学习', 2:'打算学习', 3:'进行了解', 4:'打酱油' }
@@ -131,7 +131,6 @@ async function submitDialog() {
   ElMessage.success('操作成功'); dialog.visible = false; loadData()
 }
 async function handleAssign(row) {
-  const { data: users } = await userApi.list()
   try {
     const { value } = await ElMessageBox.prompt('请输入归属人用户ID（可在用户管理查看）', '分配线索', { inputPattern: /^\d+$/, inputErrorMessage: '请输入数字ID' })
     await clueApi.assign(row.id, Number(value)); ElMessage.success('分配成功'); loadData()
@@ -149,7 +148,13 @@ async function handleFalse(row) {
 async function handleImport({ file }) {
   const res = await clueApi.import(file); ElMessage.success(res.msg); loadData()
 }
-function handleExport() { window.location.href = clueApi.exportUrl }
+async function handleExport() {
+  const blob = await clueApi.exportExcel()
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url; a.download = '线索数据.xlsx'; a.click()
+  URL.revokeObjectURL(url)
+}
 
 onMounted(loadData)
 </script>

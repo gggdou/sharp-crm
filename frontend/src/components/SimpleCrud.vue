@@ -31,8 +31,8 @@
                    :total="total" v-model:current-page="query.page" v-model:page-size="query.pageSize" @current-change="loadData" />
 
     <el-dialog v-model="dialog.visible" :title="dialog.title" width="480px">
-      <el-form :model="form" label-width="90px">
-        <el-form-item v-for="f in editFields" :key="f.prop" :label="f.label">
+      <el-form ref="formRef" :model="form" :rules="formRules" label-width="90px">
+        <el-form-item v-for="f in editFields" :key="f.prop" :label="f.label" :prop="f.required ? f.prop : undefined">
           <el-select v-if="f.type === 'select'" v-model="form[f.prop]" style="width:100%">
             <el-option v-for="opt in f.options" :key="opt.value" :label="opt.label" :value="opt.value" />
           </el-select>
@@ -52,7 +52,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, nextTick, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 const props = defineProps({
@@ -69,6 +69,16 @@ const loading = ref(false); const list = ref([]); const total = ref(0)
 const query = reactive({ page:1, pageSize:10 })
 const dialog = reactive({ visible:false, title:'' })
 const form = reactive({})
+const formRef = ref(null)
+
+// 依据 editFields 中标记 required 的字段生成校验规则
+const formRules = computed(() => {
+  const rules = {}
+  props.editFields.forEach(f => {
+    if (f.required) rules[f.prop] = [{ required: true, message: `请输入${f.label}`, trigger: 'blur' }]
+  })
+  return rules
+})
 
 async function loadData() {
   loading.value = true
@@ -83,12 +93,16 @@ async function loadData() {
 
 function openAdd() {
   Object.keys(form).forEach(k => delete form[k]); dialog.title = '新增' + props.title; dialog.visible = true
+  nextTick(() => formRef.value?.clearValidate())
 }
 function openEdit(row) {
   Object.keys(form).forEach(k => delete form[k]); Object.assign(form, row)
   dialog.title = '编辑' + props.title; dialog.visible = true
+  nextTick(() => formRef.value?.clearValidate())
 }
 async function submit() {
+  const valid = await formRef.value.validate().catch(() => false)
+  if (!valid) return
   if (form.id) await props.api.update(form); else await props.api.add(form)
   ElMessage.success('保存成功'); dialog.visible = false; loadData()
 }
