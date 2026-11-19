@@ -1,0 +1,10 @@
+**/target
+**/node_modules
+**/.git
+**/.idea
+**/.workbuddy
+sharp-web/dist
+nginx-1.24.0-sharp/logs
+nginx-1.24.0-sharp/temp
+*.log
+README.md

@@ -1,4 +1,4 @@
-use qk;
+use sharp_crm;
 
 -- 角色表
 CREATE TABLE `role`

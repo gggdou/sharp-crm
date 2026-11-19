@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sharpcrm.mapper.BusinessMapper">
+
+    <select id="findPage" resultType="com.sharpcrm.pojo.Business">
+        select business.*, user.name as assignName
+        from business
+                 left join user on business.user_id = user.id
+        <where>
+            <if test="businessDto.businessId != null">
+                and business.id = #{businessDto.businessId}
+            </if>
+            <if test="businessDto.name != null and businessDto.name != ''">
+                and business.name like concat('%', #{businessDto.name}, '%')
+            </if>
+            <if test="businessDto.phone != null and businessDto.phone != ''">
+                and business.phone like concat('%', #{businessDto.phone}, '%')
+            </if>
+            <if test="businessDto.status != null">
+                and business.status = #{businessDto.status}
+            </if>
+            <if test="businessDto.assignName != null and businessDto.assignName != ''">
+                and user.name like concat('%', #{businessDto.assignName}, '%')
+            </if>
+            <!-- 数据权限：非管理员只查归属自己的商机，scopeUserId 由服务端推导并覆盖写入 -->
+            <if test="businessDto.scopeUserId != null">
+                and business.user_id = #{businessDto.scopeUserId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findPoolPage" resultType="com.sharpcrm.pojo.Business">
+        select *
+        from business
+        <where>
+            user_id is null
+            and status = 1
+            <if test="businessDto.businessId != null">
+                and id = #{businessDto.businessId}
+            </if>
+            <if test="businessDto.name != null and businessDto.name != ''">
+                and name like concat('%', #{businessDto.name}, '%')
+            </if>
+            <if test="businessDto.phone != null and businessDto.phone != ''">
+                and phone like concat('%', #{businessDto.phone}, '%')
+            </if>
+            <if test="businessDto.subject != null">
+                and subject = #{businessDto.subject}
+            </if>
+        </where>
+    </select>
+
+    <!-- 商机与跟进记录一对多映射 -->
+    <resultMap id="business_business_track_record_rm" type="com.sharpcrm.pojo.Business" autoMapping="true">
+        <id property="id" column="id"/>
+        <collection property="trackRecords" ofType="com.sharpcrm.pojo.BusinessTrackRecord" autoMapping="true">
+            <id property="id" column="btr_id"/>
+            <result property="userId" column="btr_user_id"/>
+            <result property="nextTime" column="btr_next_time"/>
+            <result property="createTime" column="btr_create_time"/>
+        </collection>
+    </resultMap>
+
+    <select id="findById" resultMap="business_business_track_record_rm">
+        select business.*,
+               btr.*,
+               btr.id btr_id,
+               btr.user_id btr_user_id,
+               btr.next_time btr_next_time,
+               btr.create_time btr_create_time,
+               user.name as assignName
+        from business
+                 left join business_track_record btr on business.id = btr.business_id
+                 left join user on btr.user_id = user.id
+        where business.id = #{id}
+    </select>
+
+</mapper>

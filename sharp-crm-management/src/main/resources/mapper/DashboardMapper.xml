@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sharpcrm.mapper.DashboardMapper">
+
+    <!-- 按月统计新增线索：从 months 个月前的 1 号开始，避免跨月边界丢数据 -->
+    <select id="countClueByMonth" resultType="java.util.Map">
+        select date_format(create_time, '%Y-%m') as label,
+               count(*)                        as cnt
+        from clue
+        where create_time &gt;= date_format(date_sub(curdate(), interval #{months} month), '%Y-%m-01')
+        <if test="scopeUserId != null">
+            and user_id = #{scopeUserId}
+        </if>
+        group by label
+    </select>
+
+    <!-- 按月统计新增商机 -->
+    <select id="countBusinessByMonth" resultType="java.util.Map">
+        select date_format(create_time, '%Y-%m') as label,
+               count(*)                        as cnt
+        from business
+        where create_time &gt;= date_format(date_sub(curdate(), interval #{months} month), '%Y-%m-01')
+        <if test="scopeUserId != null">
+            and user_id = #{scopeUserId}
+        </if>
+        group by label
+    </select>
+
+    <!-- 线索来源分布：channel 1 线上活动 2 推广介绍 -->
+    <select id="countClueByChannel" resultType="java.util.Map">
+        select ifnull(channel, -1) as label,
+               count(*)            as cnt
+        from clue
+        <where>
+            <if test="scopeUserId != null">
+                user_id = #{scopeUserId}
+            </if>
+        </where>
+        group by label
+    </select>
+
+    <!-- 线索状态分布：1 待分配 2 跟进中 3 伪线索 4 已转商机 -->
+    <select id="countClueByStatus" resultType="java.util.Map">
+        select ifnull(status, -1) as label,
+               count(*)           as cnt
+        from clue
+        <where>
+            <if test="scopeUserId != null">
+                user_id = #{scopeUserId}
+            </if>
+        </where>
+        group by label
+    </select>
+
+</mapper>

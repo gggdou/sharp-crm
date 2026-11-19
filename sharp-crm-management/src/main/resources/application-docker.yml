@@ -1,0 +1,15 @@
+# Docker 容器环境配置：服务名代替 localhost
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql:3306/sharp_crm?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: ${DB_PASSWORD:123456}
+  data:
+    redis:
+      host: redis
+      port: 6379
+      timeout: 3000ms
+
+knife4j:
+  enable: true

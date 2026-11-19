@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <!--继承父工程 sharp-crm-parent，统一管理版本号、公共依赖-->
+    <parent>
+        <groupId>com.sharpcrm</groupId>
+        <artifactId>sharp-crm-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <!--当前模块：实体类模块，存放数据库对应的实体POJO、DTO等-->
+    <artifactId>sharp-crm-entity</artifactId>
+
+    <properties>
+        <!--JDK源码编译版本17-->
+        <maven.compiler.source>17</maven.compiler.source>
+        <!--编译生成class文件兼容JDK17-->
+        <maven.compiler.target>17</maven.compiler.target>
+        <!--项目编码统一UTF-8，解决中文乱码-->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <!-- MySQL驱动，runtime范围：编译时不需要，运行项目才加载 -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- MyBatis-Plus SpringBoot3 Starter，简化CRUD操作，ORM框架 -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+        </dependency>
+        <!-- SpringBoot Web起步依赖，提供web相关能力（请求、文件上传等） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- EasyExcel：线索导入导出模型注解 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+        </dependency>
+        <!-- 参数校验注解：实体字段上使用 @NotBlank / @Size 等约束 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- SpringBoot单元测试依赖，scope=test只在测试环境生效 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

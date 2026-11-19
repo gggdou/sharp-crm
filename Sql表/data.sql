@@ -1,5 +1,5 @@
-create database qk;
-use qk;
+create database sharp_crm DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+use sharp_crm;
 
 -- 部门表
 create table dept(

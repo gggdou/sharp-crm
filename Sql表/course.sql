@@ -1,5 +1,5 @@
 
-use qk;
+use sharp_crm;
 -- 课程表
 create table course (
                         id int unsigned primary key auto_increment comment '课程id, 主键',

@@ -5,17 +5,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <!--父工程坐标-->
-    <groupId>com.itcast</groupId>
-    <artifactId>qk-parent</artifactId>
+    <groupId>com.sharpcrm</groupId>
+    <artifactId>sharp-crm-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
     <!--打包类型pom：代表聚合工程，只做依赖管理，不生成jar包-->
     <packaging>pom</packaging>
 
     <!--聚合模块：管理所有子模块，mvn一键打包全部子项目-->
     <modules>
-        <module>qk-common</module>
-        <module>qk-entity</module>
-        <module>qk-management</module>
+        <module>sharp-crm-common</module>
+        <module>sharp-crm-entity</module>
+        <module>sharp-crm-management</module>
     </modules>
 
     <!--继承SpringBoot官方父工程，内置springboot所有依赖版本管理-->
@@ -27,18 +27,22 @@
 
     <!--全局属性，统一存放版本号，方便集中维护-->
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <lombok.version>1.18.38</lombok.version>
         <hutool.version>5.8.44</hutool.version>
-        <qk.version>1.0-SNAPSHOT</qk.version>
+        <sharpcrm.version>1.0-SNAPSHOT</sharpcrm.version>
         <mybatis-plus.version>3.5.17</mybatis-plus.version>
         <com.aliyun.oss.version>3.18.4</com.aliyun.oss.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <activation.version>1.1.1</activation.version>
         <jaxb-runtime.version>2.3.3</jaxb-runtime.version>
         <jwt.version>0.9.1</jwt.version>
+        <easyexcel.version>4.0.3</easyexcel.version>
+        <knife4j.version>4.5.0</knife4j.version>
+        <!-- Spring Boot 3.4 需要 springdoc 2.6+，覆盖 knife4j 传递的旧版本 -->
+        <springdoc.version>2.8.6</springdoc.version>
     </properties>
 
     <!--父工程直接引入的依赖：所有子模块都会自动继承-->
@@ -84,17 +88,17 @@
                 <artifactId>jaxb-runtime</artifactId>
                 <version>${jaxb-runtime.version}</version>
             </dependency>
-            <!--子模块 qk-common 版本管理-->
+            <!--子模块 sharp-crm-common 版本管理-->
             <dependency>
-                <groupId>com.itcast</groupId>
-                <artifactId>qk-common</artifactId>
-                <version>${qk.version}</version>
+                <groupId>com.sharpcrm</groupId>
+                <artifactId>sharp-crm-common</artifactId>
+                <version>${sharpcrm.version}</version>
             </dependency>
-            <!--子模块 qk-entity 版本管理-->
+            <!--子模块 sharp-crm-entity 版本管理-->
             <dependency>
-                <groupId>com.itcast</groupId>
-                <artifactId>qk-entity</artifactId>
-                <version>${qk.version}</version>
+                <groupId>com.sharpcrm</groupId>
+                <artifactId>sharp-crm-entity</artifactId>
+                <version>${sharpcrm.version}</version>
             </dependency>
             <!--MyBatisPlus starter版本管理-->
             <dependency>
@@ -113,6 +117,29 @@
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt</artifactId>
                 <version>${jwt.version}</version>
+            </dependency>
+            <!--EasyExcel：大文件Excel导入导出，低内存占用-->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>easyexcel</artifactId>
+                <version>${easyexcel.version}</version>
+            </dependency>
+            <!--Knife4j：基于springdoc的在线接口文档-->
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
+            </dependency>
+            <!-- 显式锁定 springdoc 版本，避免与 Spring Boot 3.4 的 Spring MVC 不兼容 -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${springdoc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+                <version>${springdoc.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

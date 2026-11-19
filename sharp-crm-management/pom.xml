@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <!--继承父工程 sharp-crm-parent-->
+    <parent>
+        <groupId>com.sharpcrm</groupId>
+        <artifactId>sharp-crm-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <!--后台管理主模块，项目启动入口，controller、service、mapper都写在这里-->
+    <artifactId>sharp-crm-management</artifactId>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <!--引入公共模块 sharp-crm-common：工具类、全局异常、统一返回结果、OSS工具类等-->
+        <dependency>
+            <groupId>com.sharpcrm</groupId>
+            <artifactId>sharp-crm-common</artifactId>
+        </dependency>
+        <!--引入实体模块 sharp-crm-entity：数据库实体类、dto-->
+        <dependency>
+            <groupId>com.sharpcrm</groupId>
+            <artifactId>sharp-crm-entity</artifactId>
+        </dependency>
+        <!--MyBatis-Plus jsqlparser，用于分页插件解析SQL语句，分页必备-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-jsqlparser</artifactId>
+        </dependency>
+        <!--SpringBoot测试依赖，单元测试使用-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--Spring AOP起步依赖，用于切面编程（你的操作日志切面 @Around 记录操作日志）-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+        <!--Knife4j：在线接口文档（基于springdoc OpenAPI3）-->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+        </dependency>
+        <!--Redis：与sharp-crm-common传递的依赖共存，显式声明便于启动模块管理-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <!--Actuator：健康检查与运行指标，供监控与容器探针使用-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!--SpringBoot打包插件，将项目打包成可执行jar包-->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

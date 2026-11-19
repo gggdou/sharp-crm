@@ -37,3 +37,7 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Node / Vue 前端 ###
+sharp-web/node_modules/
+sharp-web/dist/

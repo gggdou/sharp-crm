@@ -1,0 +1,65 @@
+# SpringBoot核心配置文件 application.yml
+spring:
+  # 数据源配置：连接MySQL数据库
+  datasource:
+    # MySQL驱动类名称，mysql8使用cj包
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 数据库登录账号，可通过环境变量 DB_USERNAME 覆盖
+    username: ${DB_USERNAME:root}
+    # 数据库登录密码，可通过环境变量 DB_PASSWORD 覆盖
+    password: ${DB_PASSWORD:123456}
+    # 数据库连接地址，可通过环境变量 DB_URL 覆盖
+    url: ${DB_URL:jdbc:mysql://localhost:3306/sharp_crm}
+  # Redis 配置，可通过环境变量覆盖；docker profile 下指向 redis 容器
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 3000ms
+# MyBatis-Plus相关配置
+mybatis-plus:
+  configuration:
+    # 控制台打印SQL执行日志，开发调试默认开启；生产可通过 MYBATIS_LOG=org.apache.ibatis.logging.nologging.NoLoggingImpl 关闭
+    log-impl: ${MYBATIS_LOG:org.apache.ibatis.logging.stdout.StdOutImpl}
+    # 开启下划线与驼峰命名自动转换 user_name <--> userName
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config: # MP数据库全局策略配置
+      # 全局主键生成策略：数据库自增
+      id-type: auto
+      # table-prefix: t_  配置数据库表统一前缀，例如t_user
+
+ali:
+  oss:
+    endpoint: https://oss-cn-beijing.aliyuncs.com
+    bucketName: heima-test-gyj
+    region: cn-beijing
+
+token:
+  expire: 86400000
+  # JWT 签名密钥，可通过环境变量 JWT_SIGNATURE 覆盖
+  signature: ${JWT_SIGNATURE:sharp-crm-secret}
+
+# Actuator：健康检查与运行指标，供容器探针、监控系统采集
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: never
+  # Redis 在本项目中是可选缓存，连接失败会自动降级到内存实现，
+  # 因此不纳入整体健康判定，否则没装 Redis 的环境会被探针误判为不可用
+  health:
+    redis:
+      enabled: false
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: sharp-crm
+    version: 1.0.0
+    description: AI 职业教育招生管理 CRM
