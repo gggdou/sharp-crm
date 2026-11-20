@@ -59,7 +59,7 @@
             <artifactId>jjwt</artifactId>
         </dependency>
 
-        <!-- Redis：缓存字典/课程/验证码/token黑名单，分布式锁 -->
+        <!-- Redis：课程列表缓存、验证码存储（本地降级保证无 Redis 时可用） -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>

@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * 定时任务：长期未跟进的线索自动回收到公海
- * 简历亮点：Spring Task 定时任务 + 分布式锁防多实例重复执行
+ * 技术点：Spring Task 定时调度（当前单体单实例部署，未加分布式锁）
  */
 @Slf4j
 @Component
