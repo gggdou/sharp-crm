@@ -37,8 +37,10 @@ public class DashboardServiceImpl implements DashboardService {
     /** 看板缓存 key 前缀；按 scope 区分，避免管理员与专员的统计结果串号 */
     private static final String CACHE_KEY = "dashboard:stats:";
 
-    /** 缓存 60 秒：看板为秒级容忍的统计快照，短 TTL 降低数据库聚合压力又不至于数据过旧 */
-    private static final long CACHE_TTL = 60;
+    /** 缓存秒数：看板为秒级容忍的统计快照；设为 0 可关闭缓存（压测基线/排障用） */
+    private static final long CACHE_TTL = Long.parseLong(
+            System.getProperty("dashboard.cache.ttl",
+                    System.getenv().getOrDefault("DASHBOARD_CACHE_TTL", "60")));
 
     /** 渠道字典，与 clue.channel 字段注释保持一致 */
     private static final Map<Integer, String> CHANNEL_NAMES = Map.of(
@@ -76,16 +78,20 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public DashboardVo stats() {
         Integer scope = dataScopeHelper.scopeUserId();
-        String key = CACHE_KEY + (scope == null ? "all" : scope);
-        Object cached = redisCache.get(key);
-        if (cached instanceof DashboardVo vo) {
+        if (CACHE_TTL > 0) {
+            String key = CACHE_KEY + (scope == null ? "all" : scope);
+            Object cached = redisCache.get(key);
+            if (cached instanceof DashboardVo vo) {
+                return vo;
+            }
+            DashboardVo vo = buildStats(scope);
+            // 写操作不主动删缓存：看板是统计快照，短 TTL 内的数据滞后在业务上可接受，
+            // 避免在每个业务写接口散落缓存清理逻辑，且本地降级时 TTL 同样由 RedisCache 兜底
+            redisCache.set(key, vo, CACHE_TTL, TimeUnit.SECONDS);
             return vo;
         }
-        DashboardVo vo = buildStats(scope);
-        // 写操作不主动删缓存：看板是统计快照，60 秒 TTL 内的数据滞后在业务上可接受，
-        // 避免在每个业务写接口散落缓存清理逻辑，且本地降级时 TTL 同样由 RedisCache 兜底
-        redisCache.set(key, vo, CACHE_TTL, TimeUnit.SECONDS);
-        return vo;
+        // TTL=0 时直查数据库，用于压测基线对比
+        return buildStats(scope);
     }
 
     /** 真正执行数据库聚合的方法，从原 stats() 原样抽出 */
