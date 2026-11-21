@@ -1,6 +1,7 @@
 package com.sharpcrm.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.sharpcrm.common.RedisCache;
 import com.sharpcrm.mapper.BusinessMapper;
 import com.sharpcrm.mapper.ClueMapper;
 import com.sharpcrm.mapper.CourseMapper;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 数据看板实现：从数据库实时聚合，替代原先写死在前端的示例数据
@@ -31,6 +33,12 @@ public class DashboardServiceImpl implements DashboardService {
 
     /** 趋势图展示的月份数（含本月） */
     private static final int TREND_MONTHS = 6;
+
+    /** 看板缓存 key 前缀；按 scope 区分，避免管理员与专员的统计结果串号 */
+    private static final String CACHE_KEY = "dashboard:stats:";
+
+    /** 缓存 60 秒：看板为秒级容忍的统计快照，短 TTL 降低数据库聚合压力又不至于数据过旧 */
+    private static final long CACHE_TTL = 60;
 
     /** 渠道字典，与 clue.channel 字段注释保持一致 */
     private static final Map<Integer, String> CHANNEL_NAMES = Map.of(
@@ -62,12 +70,29 @@ public class DashboardServiceImpl implements DashboardService {
     @Autowired
     private DataScopeHelper dataScopeHelper;
 
+    @Autowired
+    private RedisCache redisCache;
+
     @Override
     public DashboardVo stats() {
+        Integer scope = dataScopeHelper.scopeUserId();
+        String key = CACHE_KEY + (scope == null ? "all" : scope);
+        Object cached = redisCache.get(key);
+        if (cached instanceof DashboardVo vo) {
+            return vo;
+        }
+        DashboardVo vo = buildStats(scope);
+        // 写操作不主动删缓存：看板是统计快照，60 秒 TTL 内的数据滞后在业务上可接受，
+        // 避免在每个业务写接口散落缓存清理逻辑，且本地降级时 TTL 同样由 RedisCache 兜底
+        redisCache.set(key, vo, CACHE_TTL, TimeUnit.SECONDS);
+        return vo;
+    }
+
+    /** 真正执行数据库聚合的方法，从原 stats() 原样抽出 */
+    private DashboardVo buildStats(Integer scope) {
         DashboardVo vo = new DashboardVo();
 
         // 各业务总量：与列表接口保持一致的数据权限，管理员统计全量，其余角色只统计本人名下
-        Integer scope = dataScopeHelper.scopeUserId();
         long clueTotal = clueMapper.selectCount(scope == null ? null
                 : Wrappers.<Clue>lambdaQuery().eq(Clue::getUserId, scope));
         long businessTotal = businessMapper.selectCount(scope == null ? null

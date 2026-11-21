@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -21,8 +21,11 @@ public class RedisCache {
     @Autowired(required = false)
     private RedisTemplate<String, Object> redisTemplate;
 
-    /** Redis 不可用时的本地降级缓存 */
-    private final Map<String, Object> localCache = new HashMap<>();
+    /** Redis 不可用时的本地降级缓存（ConcurrentHashMap 保证并发安全） */
+    private final Map<String, Object> localCache = new ConcurrentHashMap<>();
+
+    /** 本地缓存的过期时间戳（毫秒），与 Redis 的 TTL 语义对齐 */
+    private final Map<String, Long> localExpireAt = new ConcurrentHashMap<>();
 
     private boolean redisAvailable() {
         if (redisTemplate == null) {
@@ -45,6 +48,7 @@ public class RedisCache {
             // Redis 异常时静默降级
         }
         localCache.put(key, value);
+        localExpireAt.put(key, System.currentTimeMillis() + unit.toMillis(timeout));
     }
 
     public void set(String key, Object value) {
@@ -66,6 +70,16 @@ public class RedisCache {
             // 降级读取本地缓存
         }
         Object local = localCache.get(key);
+        if (local == null) {
+            return null;
+        }
+        // 本地降级同样遵循 TTL：过期即清除，避免永久缓存脏数据
+        Long expireAt = localExpireAt.get(key);
+        if (expireAt != null && System.currentTimeMillis() > expireAt) {
+            localCache.remove(key);
+            localExpireAt.remove(key);
+            return null;
+        }
         return NULL_VALUE.equals(local) ? null : local;
     }
 
@@ -81,6 +95,7 @@ public class RedisCache {
             // 降级
         }
         localCache.put(key, NULL_VALUE);
+        localExpireAt.put(key, System.currentTimeMillis() + unit.toMillis(timeout));
     }
 
     public void delete(String key) {
@@ -92,6 +107,7 @@ public class RedisCache {
             // 降级
         }
         localCache.remove(key);
+        localExpireAt.remove(key);
     }
 
     public boolean setIfAbsent(String key, Object value, long timeout, TimeUnit unit) {

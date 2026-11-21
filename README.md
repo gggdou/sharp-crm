@@ -1,6 +1,30 @@
 # 锐客 CRM（sharp-crm）
 
-面向 **AI 职业教育培训机构** 的招生客户关系管理系统，覆盖「市场活动 → 线索 → 商机 → 客户」完整转化链路，前后端分离，含 Redis 缓存、异步审计、Excel 批量导入导出与容器化部署。
+面向 **AI 职业教育培训机构** 的招生客户关系管理系统，覆盖「市场活动 → 线索 → 商机 → 客户 → 合同回款」完整转化链路，前后端分离，含 RBAC 数据权限、Redis 缓存、异步审计、Excel 批量导入导出与容器化部署。
+
+## 快速开始（3 分钟）
+
+```bash
+git clone <this-repo> && cd sharp-crm
+docker-compose -f ops/docker-compose.yml up -d          # 一键编排 MySQL + Redis + 后端 + Nginx
+# 浏览器打开 http://localhost  →  用测试账号登录（见「八、测试账号」）
+```
+
+无 Docker 时手动启动：见「4.2 初始化数据库」→「4.4 启动后端」→「4.5 启动前端」。`mvn clean test` 可脱离数据库跑通全部 34 个测试（含 4 个 Controller 层集成测试）。
+
+## 系统架构
+
+```mermaid
+flowchart LR
+    U[浏览器] --> N[Nginx :90]
+    N -->|静态资源| FE[Vue 3 前端]
+    N -->|/api 反向代理| B[Spring Boot 后端 :8080]
+    B --> DB[(MySQL 8)]
+    B --> R[(Redis 可选缓存)]
+    B --> OSS[阿里云 OSS]
+```
+
+后端为单体应用，`common / entity / management` 三个 Maven 模块聚合打包为一个 jar；数据权限在服务端强制覆盖入参，非管理员仅可见本人数据。
 
 ## 一、项目简介
 
@@ -43,7 +67,7 @@
 | 前端 | Vue 3.5 + Vite 6 + Element Plus 2.9 + Pinia + Vue Router 4 + Axios + ECharts 5 |
 | 部署 | Nginx 1.24 反向代理、Docker 多阶段构建、docker-compose 编排 |
 | 构建 | Maven 多模块聚合（sharp-crm-parent / common / entity / management）、GitHub Actions |
-| 测试 | JUnit 5 + Mockito（30 个单元测试，不依赖外部服务） |
+| 测试 | JUnit 5 + Mockito（34 个测试：30 单元 + 4 Controller 集成，不依赖外部服务） |
 
 ## 三、工程结构
 
@@ -287,9 +311,9 @@ docker compose -f ops/docker-compose.yml up -d --build
 - **存量客户缺少归属人**：7 条历史客户由旧库迁移而来，`user_id` 为空且来源商机已不存在，因此专员账号下不可见、管理员可见；新转化的客户会自动继承商机归属人。
 - **OSS 凭证为示例值**：`application.yml` 中 bucket 与 endpoint 保留原示例配置，上传功能需替换为自有 bucket 并配置环境变量。
 - **Redis 为可选依赖**：单机部署无 Redis 时走本地缓存，多实例部署必须接入 Redis 才能保证缓存一致。
-- **单元测试聚焦于纯逻辑**：30 个测试覆盖 JWT、结果封装、ThreadLocal、登录校验、线索转商机、数据权限推导、合同分期拆单与回款状态流转；未做 Controller 层集成测试（依赖真实库）。
+- **测试分层**：34 个测试，其中 30 个纯单元测试覆盖 JWT、结果封装、ThreadLocal、登录校验、线索转商机、数据权限推导、合同分期拆单与回款状态流转；4 个 Controller 层集成测试（MockMvc standaloneSetup，Service 用 Mock 隔离）覆盖请求映射、参数绑定、统一响应与异常处理。全部不依赖真实数据库。
 - **合同变更未做版本化**：已有回款记录的合同不允许修改金额，避免回款计划与合同金额对不上；真实业务中的「合同变更」需要另立变更单，本项目未实现。
-- **Element Plus 为全量引入**：产物中 element 块约 1.1MB（gzip 345KB），是当前体积的主要构成，进一步压缩需引入按需加载插件。
+- **Element Plus 已按需引入**：通过 `unplugin-vue-components` 按页面拆块，单个组件包最大约 145KB（gzip 48KB），较全量引入的 1.1MB 单块显著下降。但仍可进一步优化首屏（如路由级懒加载已有，大图表库 echarts 529KB 可视情况拆分）。
 
 ## 十、性能表现
 

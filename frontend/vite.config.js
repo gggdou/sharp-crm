@@ -1,9 +1,15 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    // 按需引入 Element Plus 组件与样式，避免全量打包 1.1MB
+    Components({ resolvers: [ElementPlusResolver()] })
+  ],
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) }
   },
@@ -19,16 +25,13 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    // element-plus 全量引入约 1.1MB（gzip 345KB），是当前产物的主要构成。
-    // 阈值放到 1200 是为了让构建输出干净；要进一步压缩需上按需引入插件，属于后续优化。
-    chunkSizeWarningLimit: 1200,
+    // Element Plus 已改为按需引入，组件按页面拆块，无需再手动钉住 element 大块。
+    chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
-        // 按「长期不变 / 变化频繁」拆分：框架与图表库独立成块，
-        // 业务代码改动时这几个大块的 hash 不变，浏览器缓存可以直接命中
+        // 只钉住长期不变的框架与图表库；Element Plus 组件交给按需插件按引用拆分
         manualChunks: {
           vue: ['vue', 'vue-router', 'pinia'],
-          element: ['element-plus', '@element-plus/icons-vue'],
           echarts: ['echarts']
         }
       }
